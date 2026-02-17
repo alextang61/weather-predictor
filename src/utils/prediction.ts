@@ -89,18 +89,31 @@ export function getPredictionLine(
   const highs = historical.map(d => d.high);
   const lows = historical.map(d => d.low);
 
-  const predictedHighs = predictValues(highs, daysAhead);
-  const predictedLows = predictValues(lows, daysAhead);
+  const highReg = linearRegression(highs);
+  const lowReg = linearRegression(lows);
 
+  const result: DailyWeather[] = [];
+
+  // Fitted line over the historical period (so you can see how it tracks actuals)
+  for (let i = 0; i < historical.length; i++) {
+    result.push({
+      date: historical[i].date,
+      high: Math.round(highReg.intercept + highReg.slope * i),
+      low: Math.round(lowReg.intercept + lowReg.slope * i),
+    });
+  }
+
+  // Extrapolated line into the future
   const lastDate = new Date(historical[historical.length - 1].date);
-
-  return predictedHighs.map((high, i) => {
+  for (let i = 0; i < daysAhead; i++) {
     const date = new Date(lastDate);
     date.setDate(date.getDate() + i + 1);
-    return {
+    result.push({
       date: date.toISOString().split('T')[0],
-      high,
-      low: predictedLows[i],
-    };
-  });
+      high: Math.round(highReg.intercept + highReg.slope * (historical.length + i)),
+      low: Math.round(lowReg.intercept + lowReg.slope * (historical.length + i)),
+    });
+  }
+
+  return result;
 }
