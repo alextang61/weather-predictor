@@ -51,9 +51,9 @@ export default function Dashboard() {
         }
 
         if (hist.length > 0) {
-          const preds = generatePredictions(hist, omForecast, nws, 3);
+          const preds = generatePredictions(hist, omForecast, nws, 10);
           setPredictions(preds);
-          setPredictionLine(getPredictionLine(hist, 7));
+          setPredictionLine(getPredictionLine(hist, 10));
         }
 
         if (openMeteoResult.status === 'rejected' && nwsResult.status === 'rejected') {

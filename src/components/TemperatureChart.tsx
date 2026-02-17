@@ -23,7 +23,28 @@ interface ChartDataPoint {
   predLow?: number;
 }
 
+const DATA_KEY_LABELS: Record<string, string> = {
+  actualHigh: 'Actual',
+  actualLow: 'Actual',
+  omHigh: 'Open-Meteo Forecast',
+  omLow: 'Open-Meteo Forecast',
+  nwsHigh: 'NWS Forecast',
+  nwsLow: 'NWS Forecast',
+  predHigh: 'Prediction',
+  predLow: 'Prediction',
+};
+
+function addDays(dateStr: string, days: number): string {
+  const d = new Date(dateStr + 'T12:00:00');
+  d.setDate(d.getDate() + days);
+  return d.toISOString().split('T')[0];
+}
+
 export default function TemperatureChart({ historical, openMeteoForecast, nwsForecast, prediction, cityName }: Props) {
+  const today = new Date().toISOString().split('T')[0];
+  const startDate = addDays(today, -7);
+  const endDate = addDays(today, 6);
+
   // Merge all data into chart-friendly format
   const dateMap = new Map<string, ChartDataPoint>();
 
@@ -53,12 +74,30 @@ export default function TemperatureChart({ historical, openMeteoForecast, nwsFor
     p.predLow = d.low;
   }
 
-  const data = Array.from(dateMap.values()).sort((a, b) => a.date.localeCompare(b.date));
-  const today = new Date().toISOString().split('T')[0];
+  const allData = Array.from(dateMap.values()).sort((a, b) => a.date.localeCompare(b.date));
+  const data = allData.filter(d => d.date >= startDate && d.date <= endDate);
 
   const formatDate = (d: string) => {
     const date = new Date(d + 'T12:00:00');
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  };
+
+  // Custom tooltip that shows data source next to each value
+  const CustomTooltipContent = ({ active, payload, label }: any) => {
+    if (!active || !payload?.length) return null;
+    return (
+      <div style={{ backgroundColor: '#1a1a2e', border: '1px solid #333', borderRadius: 8, padding: '10px 14px' }}>
+        <p style={{ margin: '0 0 6px', color: '#ccc', fontWeight: 600 }}>{formatDate(String(label))}</p>
+        {payload.map((entry: any) => {
+          const source = DATA_KEY_LABELS[entry.dataKey] || '';
+          return (
+            <p key={entry.dataKey} style={{ margin: '2px 0', color: entry.color, fontSize: 13 }}>
+              {entry.name}: {entry.value}°F <span style={{ color: '#888', fontSize: 11 }}>({source})</span>
+            </p>
+          );
+        })}
+      </div>
+    );
   };
 
   return (
@@ -69,11 +108,7 @@ export default function TemperatureChart({ historical, openMeteoForecast, nwsFor
           <CartesianGrid strokeDasharray="3 3" stroke="#333" />
           <XAxis dataKey="date" tickFormatter={formatDate} stroke="#999" fontSize={12} />
           <YAxis stroke="#999" fontSize={12} unit="°F" />
-          <Tooltip
-            contentStyle={{ backgroundColor: '#1a1a2e', border: '1px solid #333', borderRadius: 8 }}
-            labelFormatter={(label) => formatDate(String(label))}
-            formatter={(value) => [`${value}°F`]}
-          />
+          <Tooltip content={<CustomTooltipContent />} />
           <Legend />
           <ReferenceLine x={today} stroke="#666" strokeDasharray="5 5" label={{ value: 'Today', fill: '#999', fontSize: 12 }} />
 

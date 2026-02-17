@@ -59,8 +59,8 @@ Each predicted day is scored against both API forecasts:
 
 ### Output
 
-- `generatePredictions()` — returns `PredictionResult[]` for the next 3 days with predicted values, API forecast values, and confidence level
-- `getPredictionLine()` — returns `DailyWeather[]` for the next 7 days, used to draw the trend line on the chart
+- `generatePredictions()` — returns `PredictionResult[]` for the next 10 days with predicted values, API forecast values, and confidence level
+- `getPredictionLine()` — returns `DailyWeather[]` for the next 10 days, used to draw the trend line on the chart
 
 ## Component Architecture
 
@@ -90,14 +90,16 @@ App.tsx
 ### TemperatureChart (`src/components/TemperatureChart.tsx`)
 
 - Accepts a `cityName` prop, used in the chart title
+- Displays a fixed 14-day window centered on today (7 days back, 6 days forward + today)
 - Merges all data series into a single date-keyed array for Recharts
 - Plots 8 lines: actual high/low, Open-Meteo high/low, NWS high/low, predicted high/low
 - Each source has a distinct color and dash pattern for visual clarity
 - Vertical reference line marks "today" to separate actuals from forecasts
+- Custom tooltip shows data source label (Actual, Open-Meteo Forecast, NWS Forecast, Prediction) next to each value
 
 ### ForecastTable (`src/components/ForecastTable.tsx`)
 
-- Displays the next 3 days in a table with columns for each source's high/low
+- Displays the next 10 days in a table with columns for each source's high/low
 - Shows confidence badge per row
 - Prediction values are bold to stand out
 

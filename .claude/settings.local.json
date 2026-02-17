@@ -7,7 +7,16 @@
       "Bash(git rebase:*)",
       "Bash(GIT_EDITOR=true git rebase:*)",
       "Bash(npx tsc:*)",
-      "Bash(npx vite build)"
+      "Bash(npx vite build)",
+      "Bash(git push:*)",
+      "Bash(git fetch:*)",
+      "Bash(git stash:*)",
+      "Bash(git pull:*)",
+      "WebSearch",
+      "WebFetch(domain:open-meteo.com)",
+      "WebFetch(domain:openmeteo.substack.com)",
+      "Bash(curl:*)",
+      "Bash(python3:*)"
     ]
   }
 }
