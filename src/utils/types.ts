@@ -1,3 +1,10 @@
+export interface City {
+  name: string;
+  lat: number;
+  lon: number;
+  timezone: string;
+}
+
 export interface DailyWeather {
   date: string; // YYYY-MM-DD
   high: number; // °F

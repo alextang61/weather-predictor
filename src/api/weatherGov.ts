@@ -21,11 +21,11 @@ interface ForecastResponse {
   };
 }
 
-export async function fetchNWSForecast(): Promise<DailyWeather[]> {
+export async function fetchNWSForecast(lat: number, lon: number): Promise<DailyWeather[]> {
   const headers = { 'User-Agent': 'WeatherPredictor/1.0' };
 
   // Step 1: Get forecast URL from points endpoint
-  const pointsUrl = 'https://api.weather.gov/points/40.7128,-74.006';
+  const pointsUrl = `https://api.weather.gov/points/${lat},${lon}`;
   const pointsResponse = await axios.get<PointsResponse>(pointsUrl, { headers });
   const forecastUrl = pointsResponse.data.properties.forecast;
 

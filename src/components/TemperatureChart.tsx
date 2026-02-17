@@ -8,6 +8,7 @@ interface Props {
   openMeteoForecast: DailyWeather[];
   nwsForecast: DailyWeather[];
   prediction: DailyWeather[];
+  cityName: string;
 }
 
 interface ChartDataPoint {
@@ -22,7 +23,7 @@ interface ChartDataPoint {
   predLow?: number;
 }
 
-export default function TemperatureChart({ historical, openMeteoForecast, nwsForecast, prediction }: Props) {
+export default function TemperatureChart({ historical, openMeteoForecast, nwsForecast, prediction, cityName }: Props) {
   // Merge all data into chart-friendly format
   const dateMap = new Map<string, ChartDataPoint>();
 
@@ -62,7 +63,7 @@ export default function TemperatureChart({ historical, openMeteoForecast, nwsFor
 
   return (
     <div className="chart-container">
-      <h2>Temperature Trends — NYC</h2>
+      <h2>Temperature Trends — {cityName}</h2>
       <ResponsiveContainer width="100%" height={400}>
         <LineChart data={data} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#333" />

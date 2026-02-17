@@ -11,16 +11,16 @@ interface OpenMeteoResponse {
   };
 }
 
-export async function fetchOpenMeteoData(): Promise<{
+export async function fetchOpenMeteoData(lat: number, lon: number, timezone: string): Promise<{
   historical: DailyWeather[];
   forecast: DailyWeather[];
 }> {
   const url = 'https://api.open-meteo.com/v1/forecast';
   const params = {
-    latitude: 40.7128,
-    longitude: -74.006,
+    latitude: lat,
+    longitude: lon,
     daily: 'temperature_2m_max,temperature_2m_min',
-    timezone: 'America/New_York',
+    timezone,
     past_days: 14,
     forecast_days: 7,
     temperature_unit: 'fahrenheit',

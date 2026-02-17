@@ -2,12 +2,15 @@ import { useEffect, useState } from 'react';
 import { fetchOpenMeteoData } from '../api/openMeteo';
 import { fetchNWSForecast } from '../api/weatherGov';
 import { generatePredictions, getPredictionLine } from '../utils/prediction';
-import { DailyWeather, PredictionResult } from '../utils/types';
+import { City, DailyWeather, PredictionResult } from '../utils/types';
+import { DEFAULT_CITY } from '../utils/cities';
 import TemperatureChart from './TemperatureChart';
 import ForecastTable from './ForecastTable';
 import PredictionCard from './PredictionCard';
+import CitySelector from './CitySelector';
 
 export default function Dashboard() {
+  const [selectedCity, setSelectedCity] = useState<City>(DEFAULT_CITY);
   const [historical, setHistorical] = useState<DailyWeather[]>([]);
   const [openMeteoForecast, setOpenMeteoForecast] = useState<DailyWeather[]>([]);
   const [nwsForecast, setNwsForecast] = useState<DailyWeather[]>([]);
@@ -23,8 +26,8 @@ export default function Dashboard() {
         setError(null);
 
         const [openMeteoResult, nwsResult] = await Promise.allSettled([
-          fetchOpenMeteoData(),
-          fetchNWSForecast(),
+          fetchOpenMeteoData(selectedCity.lat, selectedCity.lon, selectedCity.timezone),
+          fetchNWSForecast(selectedCity.lat, selectedCity.lon),
         ]);
 
         let hist: DailyWeather[] = [];
@@ -65,7 +68,7 @@ export default function Dashboard() {
     }
 
     loadData();
-  }, []);
+  }, [selectedCity]);
 
   if (loading) {
     return (
@@ -89,16 +92,18 @@ export default function Dashboard() {
     <div className="dashboard">
       <header>
         <h1>Weather Predictor</h1>
-        <p className="subtitle">NYC Temperature Analysis for Kalshi Markets</p>
+        <p className="subtitle">{selectedCity.name} Temperature Analysis for Kalshi Markets</p>
+        <CitySelector selectedCity={selectedCity} onCityChange={setSelectedCity} />
       </header>
 
-      <PredictionCard predictions={predictions} />
+      <PredictionCard predictions={predictions} cityName={selectedCity.name} />
 
       <TemperatureChart
         historical={historical}
         openMeteoForecast={openMeteoForecast}
         nwsForecast={nwsForecast}
         prediction={predictionLine}
+        cityName={selectedCity.name}
       />
 
       <ForecastTable predictions={predictions} />

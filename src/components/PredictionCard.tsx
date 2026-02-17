@@ -2,9 +2,10 @@ import { PredictionResult } from '../utils/types';
 
 interface Props {
   predictions: PredictionResult[];
+  cityName: string;
 }
 
-export default function PredictionCard({ predictions }: Props) {
+export default function PredictionCard({ predictions, cityName }: Props) {
   if (predictions.length === 0) return null;
 
   const tomorrow = predictions[0];
@@ -63,7 +64,7 @@ export default function PredictionCard({ predictions }: Props) {
       <div className="kalshi-hint">
         <h3>Kalshi Market Insight</h3>
         <p>
-          Predicted NYC high: <strong>{tomorrow.predictedHigh}°F</strong>
+          Predicted {cityName} high: <strong>{tomorrow.predictedHigh}°F</strong>
           {tomorrow.openMeteoHigh !== null && (
             <> | Open-Meteo: <strong>{tomorrow.openMeteoHigh}°F</strong></>
           )}
